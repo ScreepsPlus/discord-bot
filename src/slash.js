@@ -13,6 +13,22 @@ const COMMAND_TYPE = {
   MENTIONABLE: 9
 }
 
+const FLAG_EPHEMERAL = 1 << 6
+
+/** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-response-object-interaction-callback-type */
+const INTERACTION_CALLBACK_TYPE = {
+  /** ACK a Ping */
+  PONG:	1,
+  /** respond to an interaction with a message */
+  CHANNEL_MESSAGE_WITH_SOURCE: 4, 
+  /** ACK an interaction and edit a response later, the user sees a loading state */
+  DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE:	5, 
+  /** for components, ACK an interaction and edit the original message later; the user does not see a loading state */
+  DEFERRED_UPDATE_MESSAGE: 6, 
+  /** for components, edit the message the component was attached to */
+  UPDATE_MESSAGE: 7, 
+}
+
 const optsFromInteraction = interaction => interaction.data.options.reduce((l, o) => { l[o.name] = o.value; return l }, {})
 
 const commands = [
@@ -25,7 +41,7 @@ const commands = [
       const sub = shard === 'shardSeason' ? 'season' : 'a'
       const url = `https://screeps.com/${sub}/#!/room/${shard}/${room}`
       await reply({
-        type: 4,
+        type: INTERACTION_CALLBACK_TYPE.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           content: `Room link: [${shard} - ${room}](${url}) ${comment}`,
           flags: 0
@@ -69,7 +85,7 @@ const commands = [
         required: false,
         async run ({ interaction, client, guild, user, reply }) {
           await reply({
-            type: 4,
+            type: INTERACTION_CALLBACK_TYPE.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {
               content: `TODO: ScreepsPlus info here :D`
             }
@@ -108,17 +124,17 @@ export async function registerSlashCommands (client, token, guild = '') {
       replied = true
       if (typeof data === 'string') {
         data = {
-          type: 4,
+          type: INTERACTION_CALLBACK_TYPE.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
             content: data
           }
         }
       }
-      await client.api.interactions(interaction.id, interaction.token).callback.post({ data }).catch(console.error)
+      await client.api.interactions(interaction.id, interaction.token).callback.post({ data })
     }
     const command = commands.find(c => c.name === interaction.data.name)
     if (command) {
-      await command.run({ interaction, client, guild, user, reply })
+      await command.run({ interaction, client, guild, user, reply }).catch(console.error)
     }
   });
 }

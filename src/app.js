@@ -31,7 +31,7 @@ client.on('message', async message => {
       message.channel.send('pong')
     }
   }
-  
+
   if (message.content.match(/screepsplus/i)) {
     await message.react('<:splus:865248046328315914>')
     await message.react('👀')
