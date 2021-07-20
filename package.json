@@ -1,0 +1,15 @@
+{
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "discord.js": "^12.5.3",
+    "js-yaml": "^4.1.0"
+  },
+  "type": "module",
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
